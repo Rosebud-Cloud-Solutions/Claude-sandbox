@@ -1,11 +1,11 @@
 param location string
 param appName string
 
-// App Service Plan (B1 Basic; swap to F1 for free-tier testing)
+// App Service Plan (F1 Free — upgrade to B1 Basic once quota is approved)
 resource plan 'Microsoft.Web/serverfarms@2023-01-01' = {
   name: '${appName}-plan'
   location: location
-  sku: { name: 'B1', tier: 'Basic' }
+  sku: { name: 'F1', tier: 'Free' }
   kind: 'linux'
   properties: { reserved: true } // Required for Linux
 }
