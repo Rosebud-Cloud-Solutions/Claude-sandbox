@@ -16,9 +16,22 @@ resource webApp 'Microsoft.Web/sites@2023-01-01' = {
   location: location
   properties: {
     serverFarmId: plan.id
+    publicNetworkAccess: 'Enabled'
     siteConfig: {
       linuxFxVersion: 'PYTHON|3.11'
       appCommandLine: 'gunicorn --bind=0.0.0.0:8000 app:app'
+      ipSecurityRestrictions: []
+      scmIpSecurityRestrictions: []
+      appSettings: [
+        {
+          name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
+          value: 'true'
+        }
+        {
+          name: 'ENABLE_ORYX_BUILD'
+          value: 'true'
+        }
+      ]
     }
     httpsOnly: true
   }
