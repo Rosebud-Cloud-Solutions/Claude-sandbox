@@ -23,6 +23,13 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Set app settings from GitHub secrets
+        run: |
+          az webapp config appsettings set \
+            --name rcs-chatbot \
+            --resource-group rg-rcs-chatbot \
+            --settings ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
