@@ -1,8 +1,7 @@
 name: Deploy RCS Chatbot
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:  # Manual trigger only — run from GitHub Actions tab
 
 jobs:
   deploy:
@@ -23,14 +22,27 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Set app settings from GitHub secrets
+      - name: Create resource group
+        run: |
+          az group create \
+            --name rg-rcs-chatbot \
+            --location uksouth
+
+      - name: Deploy Azure infrastructure (Bicep)
+        run: |
+          az deployment group create \
+            --resource-group rg-rcs-chatbot \
+            --template-file infra/main.bicep \
+            --mode Incremental
+
+      - name: Set API key from GitHub secret
         run: |
           az webapp config appsettings set \
             --name rcs-chatbot \
             --resource-group rg-rcs-chatbot \
             --settings ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
 
-      - name: Deploy to Azure Web App
+      - name: Deploy app to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: rcs-chatbot
