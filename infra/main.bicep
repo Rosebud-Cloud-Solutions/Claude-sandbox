@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 
 param location string = 'uksouth'
-param appName string = 'rcs-chatbot'
+param appName string = 'rosebudcloud-chat'
 param rgName string = 'rg-rcs-chatbot'
 
 // Create the resource group at subscription scope

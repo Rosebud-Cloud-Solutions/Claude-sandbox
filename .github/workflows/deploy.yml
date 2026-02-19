@@ -41,19 +41,19 @@ jobs:
             --subscription ${{ env.AZURE_SUBSCRIPTION_ID }} \
             --location uksouth \
             --template-file infra/main.bicep \
-            --name rcs-chatbot-infra
+            --name rosebudcloud-chat-infra
 
       - name: Set API key from GitHub secret
         run: |
           az webapp config appsettings set \
-            --name rcs-chatbot \
-            --resource-group rg-rcs-chatbot \
+            --name rosebudcloud-chat \
+            --resource-group rg-rosebudcloud-chat \
             --settings ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
 
       - name: Deploy app to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: rcs-chatbot
+          app-name: rosebudcloud-chat
           package: .
 
   destroy:
@@ -68,7 +68,7 @@ jobs:
       - name: Delete resource group
         run: |
           az group delete \
-            --name rg-rcs-chatbot \
+            --name rg-rosebudcloud-chat \
             --subscription ${{ env.AZURE_SUBSCRIPTION_ID }} \
             --yes \
             --no-wait
