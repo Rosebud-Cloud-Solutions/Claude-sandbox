@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RCS Assistant | Rosebud Cloud Solutions</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="chat-wrapper">
+    <header>
+      <img src="/static/logo.png" alt="Rosebud Cloud Solutions" class="logo">
+      <div class="header-text">
+        <h1>RCS Assistant</h1>
+        <span class="status">&#9679; Online</span>
+      </div>
+    </header>
+
+    <div class="messages" id="messages">
+      <div class="message assistant">
+        <p>Hi! I'm the Rosebud Cloud Solutions assistant. I can help you understand
+        our cloud, AI, and automation services. What can I help you with today?</p>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Ask about our services..."
+             autocomplete="off" />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    let conversationHistory = [];
+
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const text = input.value.trim();
+      if (!text) return;
+
+      appendMessage("user", text);
+      conversationHistory.push({ role: "user", content: text });
+      input.value = "";
+
+      appendMessage("assistant", "...", "typing");
+
+      try {
+        const response = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: conversationHistory })
+        });
+
+        const data = await response.json();
+        removeTyping();
+
+        if (data.reply) {
+          appendMessage("assistant", data.reply);
+          conversationHistory.push({ role: "assistant", content: data.reply });
+        } else {
+          appendMessage("assistant", "Sorry, something went wrong. Please try again.");
+        }
+      } catch (err) {
+        removeTyping();
+        appendMessage("assistant", "Connection error. Please try again.");
+      }
+    }
+
+    function appendMessage(role, text, id = "") {
+      const messages = document.getElementById("messages");
+      const div = document.createElement("div");
+      div.className = `message ${role}`;
+      if (id) div.id = id;
+      div.innerHTML = `<p>${escapeHtml(text)}</p>`;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function removeTyping() {
+      const typing = document.getElementById("typing");
+      if (typing) typing.remove();
+    }
+
+    document.getElementById("userInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+</body>
+</html>

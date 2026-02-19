@@ -1,0 +1,114 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #0d0d0d;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.chat-wrapper {
+  width: 100%;
+  max-width: 780px;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 24px;
+  background: #1a1a1a;
+  border-bottom: 1px solid #8B2FC9;
+}
+
+.logo { height: 48px; width: auto; }
+
+.header-text h1 {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.status {
+  color: #7ed957;
+  font-size: 0.75rem;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.message { max-width: 78%; }
+
+.message.user {
+  align-self: flex-end;
+  background: #8B2FC9;
+  color: #fff;
+  border-radius: 18px 18px 4px 18px;
+  padding: 12px 16px;
+}
+
+.message.assistant {
+  align-self: flex-start;
+  background: #1e1e1e;
+  color: #e0e0e0;
+  border-radius: 18px 18px 18px 4px;
+  padding: 12px 16px;
+  border: 1px solid #2a2a2a;
+}
+
+.message p { line-height: 1.6; font-size: 0.95rem; }
+
+.input-area {
+  display: flex;
+  gap: 10px;
+  padding: 16px 24px;
+  background: #1a1a1a;
+  border-top: 1px solid #2a2a2a;
+}
+
+.input-area input {
+  flex: 1;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #fff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input-area input:focus { border-color: #8B2FC9; }
+
+.input-area button {
+  background: #8B2FC9;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 22px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.input-area button:hover { background: #7020b0; }
+
+.messages::-webkit-scrollbar { width: 6px; }
+.messages::-webkit-scrollbar-track { background: transparent; }
+.messages::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
