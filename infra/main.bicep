@@ -1,28 +1,23 @@
-param location string = resourceGroup().location
-param appName string = 'rcs-chatbot'
+targetScope = 'subscription'
 
-// App Service Plan (B1 Basic; swap to F1 for free-tier testing)
-resource plan 'Microsoft.Web/serverfarms@2023-01-01' = {
-  name: '${appName}-plan'
+param location string = 'uksouth'
+param appName string = 'rcs-chatbot'
+param rgName string = 'rg-rcs-chatbot'
+
+// Create the resource group at subscription scope
+resource rg 'Microsoft.Resources/resourceGroups@2023-07-01' = {
+  name: rgName
   location: location
-  sku: { name: 'B1', tier: 'Basic' }
-  kind: 'linux'
-  properties: { reserved: true } // Required for Linux
 }
 
-// Web App — ANTHROPIC_API_KEY is injected by GitHub Actions from a GitHub secret
-resource webApp 'Microsoft.Web/sites@2023-01-01' = {
-  name: appName
-  location: location
-  properties: {
-    serverFarmId: plan.id
-    siteConfig: {
-      linuxFxVersion: 'PYTHON|3.11'
-      appCommandLine: 'gunicorn --bind=0.0.0.0:8000 app:app'
-    }
-    httpsOnly: true
+// Deploy App Service resources into the resource group via module
+module app 'modules/app.bicep' = {
+  name: 'rcs-app'
+  scope: rg
+  params: {
+    location: location
+    appName: appName
   }
 }
 
-output webAppName string = webApp.name
-output webAppUrl string = 'https://${webApp.properties.defaultHostName}'
+output webAppUrl string = app.outputs.webAppUrl
