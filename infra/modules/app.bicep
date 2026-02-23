@@ -19,7 +19,7 @@ resource webApp 'Microsoft.Web/sites@2023-01-01' = {
     publicNetworkAccess: 'Enabled'
     siteConfig: {
       linuxFxVersion: 'PYTHON|3.11'
-      appCommandLine: 'gunicorn --bind=0.0.0.0:8000 app:app'
+      appCommandLine: 'gunicorn --chdir /home/site/wwwroot --bind=0.0.0.0:8000 app:app'
       ipSecurityRestrictions: []
       scmIpSecurityRestrictions: []
       appSettings: [
@@ -34,6 +34,18 @@ resource webApp 'Microsoft.Web/sites@2023-01-01' = {
       ]
     }
     httpsOnly: true
+  }
+}
+
+// GitHub repo connection — deployment is managed via GitHub Actions workflow
+resource sourceControl 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
+  parent: webApp
+  name: 'web'
+  properties: {
+    repoUrl: 'https://github.com/Rosebud-Cloud-Solutions/Claude-sandbox'
+    branch: 'main'
+    isGitHubAction: true
+    isManualIntegration: false
   }
 }
 
