@@ -58,11 +58,13 @@
           appendMessage("assistant", data.reply);
           conversationHistory.push({ role: "assistant", content: data.reply });
         } else {
-          appendMessage("assistant", "Sorry, something went wrong. Please try again.");
+          appendMessage("assistant", "Error: " + (data.error || "Unknown error. Please try again."));
+          conversationHistory.pop();
         }
       } catch (err) {
         removeTyping();
-        appendMessage("assistant", "Connection error. Please try again.");
+        appendMessage("assistant", "Connection error: " + err.message);
+        conversationHistory.pop();
       }
     }
 
