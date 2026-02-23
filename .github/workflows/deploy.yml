@@ -41,14 +41,8 @@ jobs:
             --subscription ${{ env.AZURE_SUBSCRIPTION_ID }} \
             --location uksouth \
             --template-file infra/main.bicep \
-            --name rosebudcloud-chat-infra
-
-      - name: Set API key from GitHub secret
-        run: |
-          az webapp config appsettings set \
-            --name rosebudcloud-chat \
-            --resource-group rg-rosebudcloud-chat \
-            --settings ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+            --name rosebudcloud-chat-infra \
+            --parameters apiKey=${{ secrets.ANTHROPIC_API_KEY }}
 
       - name: Deploy app to Azure Web App
         uses: azure/webapps-deploy@v3

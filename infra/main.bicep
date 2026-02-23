@@ -4,6 +4,9 @@ param location string = 'uksouth'
 param appName string = 'rosebudcloud-chat'
 param rgName string = 'rg-rosebudcloud-chat'
 
+@secure()
+param apiKey string
+
 // Create the resource group at subscription scope
 resource rg 'Microsoft.Resources/resourceGroups@2023-07-01' = {
   name: rgName
@@ -17,6 +20,7 @@ module app 'modules/app.bicep' = {
   params: {
     location: location
     appName: appName
+    apiKey: apiKey
   }
 }
 

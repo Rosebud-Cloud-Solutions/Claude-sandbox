@@ -1,6 +1,9 @@
 param location string
 param appName string
 
+@secure()
+param apiKey string
+
 // App Service Plan (F1 Free — upgrade to B1 Basic once quota is approved)
 resource plan 'Microsoft.Web/serverfarms@2023-01-01' = {
   name: '${appName}-plan'
@@ -10,7 +13,7 @@ resource plan 'Microsoft.Web/serverfarms@2023-01-01' = {
   properties: { reserved: true } // Required for Linux
 }
 
-// Web App — ANTHROPIC_API_KEY is injected by GitHub Actions from a GitHub secret
+// Web App
 resource webApp 'Microsoft.Web/sites@2023-01-01' = {
   name: appName
   location: location
@@ -24,6 +27,10 @@ resource webApp 'Microsoft.Web/sites@2023-01-01' = {
       scmIpSecurityRestrictions: []
       appSettings: [
         {
+          name: 'ANTHROPIC_API_KEY'
+          value: apiKey
+        }
+        {
           name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
           value: 'true'
         }
@@ -34,18 +41,6 @@ resource webApp 'Microsoft.Web/sites@2023-01-01' = {
       ]
     }
     httpsOnly: true
-  }
-}
-
-// GitHub repo connection — deployment is managed via GitHub Actions workflow
-resource sourceControl 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
-  parent: webApp
-  name: 'web'
-  properties: {
-    repoUrl: 'https://github.com/Rosebud-Cloud-Solutions/Claude-sandbox'
-    branch: 'main'
-    isGitHubAction: true
-    isManualIntegration: false
   }
 }
 
