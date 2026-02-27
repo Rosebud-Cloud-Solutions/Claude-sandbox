@@ -6,6 +6,24 @@ app = Flask(__name__)
 
 client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
+ALLOWED_ORIGINS = {
+    "https://rosebudcloudsolutions.co.uk",
+    "https://www.rosebudcloudsolutions.co.uk",
+}
+
+
+@app.after_request
+def add_cors(response):
+    origin = request.headers.get("Origin", "")
+    if origin in ALLOWED_ORIGINS:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Vary"] = "Origin"
+        if request.method == "OPTIONS":
+            response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+            response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+            response.headers["Access-Control-Max-Age"] = "86400"
+    return response
+
 SYSTEM_PROMPT = """You are the Rosebud Cloud Solutions assistant — a helpful,
 knowledgeable AI for a Microsoft-focused cloud consultancy based in the UK.
 
@@ -30,8 +48,11 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/chat", methods=["POST"])
+@app.route("/chat", methods=["POST", "OPTIONS"])
 def chat():
+    if request.method == "OPTIONS":
+        return "", 204
+
     data = request.get_json()
     messages = data.get("messages", [])
 
