@@ -19,6 +19,7 @@ jobs:
   deploy:
     if: ${{ github.event.inputs.action == 'deploy' }}
     runs-on: ubuntu-latest
+    environment: Dev
     steps:
       - uses: actions/checkout@v4
 
