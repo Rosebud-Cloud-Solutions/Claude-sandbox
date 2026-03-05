@@ -73,6 +73,35 @@ header {
 
 .message p { line-height: 1.6; font-size: 0.95rem; }
 
+.message.assistant h2,
+.message.assistant h3 {
+  color: #c084f5;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 10px 0 4px;
+}
+
+.message.assistant h2 { font-size: 1rem; }
+
+.message.assistant ul {
+  padding-left: 18px;
+  margin: 4px 0;
+}
+
+.message.assistant li {
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+}
+
+.message.assistant hr {
+  border: none;
+  border-top: 1px solid #333;
+  margin: 10px 0;
+}
+
+.message.assistant strong { color: #fff; }
+
 .input-area {
   display: flex;
   gap: 10px;
