@@ -73,7 +73,7 @@
       const div = document.createElement("div");
       div.className = `message ${role}`;
       if (id) div.id = id;
-      div.innerHTML = `<p>${escapeHtml(text)}</p>`;
+      div.innerHTML = role === "assistant" ? renderMarkdown(text) : `<p>${escapeHtml(text)}</p>`;
       messages.appendChild(div);
       messages.scrollTop = messages.scrollHeight;
     }
@@ -84,6 +84,60 @@
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
+    }
+
+    function renderMarkdown(text) {
+      // Escape HTML first to prevent XSS, then apply markdown patterns
+      let html = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+
+      // Inline bold
+      html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+
+      const lines = html.split("\n");
+      const output = [];
+      let inList = false;
+      let paraLines = [];
+
+      function flushPara() {
+        const content = paraLines.join("<br>").trim();
+        if (content) output.push("<p>" + content + "</p>");
+        paraLines = [];
+      }
+      function flushList() {
+        if (inList) { output.push("</ul>"); inList = false; }
+      }
+
+      for (const line of lines) {
+        if (/^### (.+)/.test(line)) {
+          flushPara(); flushList();
+          output.push("<h3>" + line.replace(/^### /, "") + "</h3>");
+        } else if (/^## (.+)/.test(line)) {
+          flushPara(); flushList();
+          output.push("<h2>" + line.replace(/^## /, "") + "</h2>");
+        } else if (/^# (.+)/.test(line)) {
+          flushPara(); flushList();
+          output.push("<h1>" + line.replace(/^# /, "") + "</h1>");
+        } else if (/^---$/.test(line.trim())) {
+          flushPara(); flushList();
+          output.push("<hr>");
+        } else if (/^[-*] (.+)/.test(line)) {
+          flushPara();
+          if (!inList) { output.push("<ul>"); inList = true; }
+          output.push("<li>" + line.replace(/^[-*] /, "") + "</li>");
+        } else if (line.trim() === "") {
+          flushPara(); flushList();
+        } else {
+          if (inList) flushList();
+          paraLines.push(line);
+        }
+      }
+      flushPara(); flushList();
+
+      return output.join("\n");
     }
 
     function removeTyping() {
