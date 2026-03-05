@@ -42,7 +42,14 @@ jobs:
             --location uksouth \
             --template-file infra/main.bicep \
             --name rosebudcloud-chat-infra \
-            --parameters apiKey=${{ secrets.ANTHROPIC_API_KEY }}
+            --parameters apiKey="${{ secrets.ANTHROPIC_API_KEY }}"
+
+      - name: Set API key in Azure Web App settings
+        run: |
+          az webapp config appsettings set \
+            --resource-group rg-rosebudcloud-chat \
+            --name rosebudcloud-chat \
+            --settings "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}"
 
       - name: Deploy app to Azure Web App
         uses: azure/webapps-deploy@v3
