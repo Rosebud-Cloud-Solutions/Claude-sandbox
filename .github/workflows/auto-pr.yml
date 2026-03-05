@@ -3,6 +3,7 @@ name: Auto PR
 on:
   push:
     branches-ignore:
+      - main
       - master
 
 permissions:
@@ -22,7 +23,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           BRANCH="${{ github.ref_name }}"
-          BASE="master"
+          BASE="main"
 
           # Build PR body from commits on this branch not in base
           COMMITS=$(git log origin/${BASE}..HEAD --pretty=format:"- %s" 2>/dev/null || git log HEAD~5..HEAD --pretty=format:"- %s")
